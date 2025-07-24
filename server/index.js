@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
 
 //use routers
 app.use("/api/v1/restaurants", restaurantRouter);
-app.use("/api/v1/auth/signup", authRouter);
+app.use("/api/v1/auth", authRouter);
 
 app.listen(PORT, () => {
   console.log("Listening to http://localhost:" + PORT);
