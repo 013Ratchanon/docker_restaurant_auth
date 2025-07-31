@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-
+import Swal from "sweetalert2";
 import Restaurants from "../components/Restaurants";
+import RestaurantSevice from "../services/restaurant.service";
 const Home = () => {
   const [restaurants, setRestaurants] = useState([]);
   // const [keyword, setKeyword] = useState("");
@@ -21,22 +22,25 @@ const Home = () => {
     // console.log(result);
   };
   useEffect(() => {
-    //call api: getAllRestaurants
-    fetch("http://localhost:5000/api/v1/restaurants/")
-      .then((res) => {
-        // convert to json format
-        return res.json();
-      })
-      .then((response) => {
-        //save to state
-        setRestaurants(response);
-        setfilterdRestaurants(response);
-      })
-      .catch((err) => {
-        //catch error
-        console.log(err.message);
-      });
+    const getAllRestaurants = async () => {
+      try {
+        const response = await RestaurantSevice.getAllRestaurants();
+        if (response.status === 200) {
+          setRestaurants(response.data); // 🔍 อย่าลืมเช็คว่า response.data เป็น array
+          setfilterdRestaurants(response.data);
+        }
+      } catch (error) {
+        Swal.fire({
+          title: "Get All restaurants",
+          icon: "error",
+          text: error?.response?.data?.message || error.message,
+        });
+      }
+    };
+
+    getAllRestaurants(); // ✅ เรียกใช้หลังประกาศเสร็จ
   }, []);
+
   return (
     <div className="container mx-auto">
       <div>
