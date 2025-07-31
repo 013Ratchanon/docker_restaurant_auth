@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import NavBar from "../components/NavBar";
+//
 const AddRestaurant = () => {
   const [restaurant, setRestaurants] = useState({
     name: "",
