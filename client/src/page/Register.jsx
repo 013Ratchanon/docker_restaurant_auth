@@ -1,41 +1,50 @@
 import React, { useState } from "react";
-import NavBar from "../components/NavBar";
-
+import AuthService from "../services/auth.service";
+import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 const Register = () => {
-  const [restaurant, setRestaurants] = useState({
+  const [register, setRegister] = useState({
     username: "",
-    name: "",
     password: "",
+    name: "",
     email: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setRestaurants({ ...restaurant, [name]: value });
+    setRegister({ ...register, [name]: value });
   };
-
+  const navigate = useNavigate();
   const handleSubmit = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/v1/restaurants/",
-        {
-          method: "POST",
-          body: JSON.stringify(restaurant),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      const newUser = await AuthService.register(
+        register.username,
+        register.name,
+        register.email,
+        register.password
       );
-      if (response.status === 200) {
-        alert("Restaurant registered successfully!");
-        setRestaurants({
-          name: "",
-          type: "",
-          imgUrl: "",
+
+      if (newUser.status === 200) {
+        Swal.fire({
+          title: "User Registration",
+          text: newUser.data.message,
+          icon: "success",
+        }).then(() => {
+          setRegister({
+            username: "",
+            password: "",
+            name: "",
+            email: "",
+          });
+          navigate("/");
         });
       }
     } catch (error) {
-      console.log(error);
+      Swal.fire({
+        title: "Registration Failed",
+        text: error?.response?.data?.message || "Unable to register user",
+        icon: "error",
+      });
     }
   };
 
@@ -49,7 +58,7 @@ const Register = () => {
           <input
             type="text"
             name="username"
-            value={restaurant.username}
+            value={register.username}
             onChange={handleChange}
             placeholder="Username"
             className="input input-secondary w-full mb-4 border p-2 rounded text-white"
@@ -59,7 +68,7 @@ const Register = () => {
           <input
             type="password"
             name="password"
-            value={restaurant.password}
+            value={register.password}
             onChange={handleChange}
             placeholder="Password"
             className="input input-primary w-full border p-2 rounded text-white"
@@ -69,7 +78,7 @@ const Register = () => {
           <input
             type="text"
             name="name"
-            value={restaurant.name}
+            value={register.name}
             onChange={handleChange}
             placeholder="Name"
             className="input input-secondary w-full mb-4 border p-2 rounded text-white"
@@ -77,9 +86,9 @@ const Register = () => {
 
           <legend className="mb-2 font-medium">Email</legend>
           <input
-            type="password"
+            type="email"
             name="email"
-            value={restaurant.email}
+            value={register.email}
             onChange={handleChange}
             placeholder="Email"
             className="input input-primary w-full border p-2 rounded text-white"
@@ -94,7 +103,11 @@ const Register = () => {
           >
             Register
           </button>
-          <button className="btn btn-outline btn-error" type="button">
+          <button
+            className="btn btn-outline btn-error"
+            type="button"
+            onClick={() => navigate("/")}
+          >
             Cancel
           </button>
         </div>

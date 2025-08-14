@@ -1,37 +1,39 @@
 import React, { useState } from "react";
-import NavBar from "../components/NavBar";
+import AuthService from "../services/auth.service";
+import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 const Login = () => {
-  const [restaurant, setRestaurants] = useState({
-    name: "",
-    type: "",
-    imgUrl: "",
+  const [login, setLogin] = useState({
+    username: "",
+    password: "",
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setRestaurants({ ...restaurant, [name]: value });
+    setLogin((login) => ({ ...login, [name]: value }));
   };
+
+  const navigate = useNavigate();
   const handleSubmit = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/v1/restaurants/",
-        {
-          method: "POST",
-          body: JSON.stringify(restaurant),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      const currentUser = await AuthService.login(
+        login.username,
+        login.password
       );
-      if (response.status === 200) {
-        alert("Restaurant added successfully!!");
-        setRestaurants({
-          name: "",
-          type: "",
-          imgUrl: "",
+      if (currentUser.status === 200) {
+        Swal.fire({
+          title: "User Login",
+          text: "Login successfully!",
+          icon: "success",
+        }).then(() => {
+          navigate("/");
         });
       }
     } catch (error) {
-      console.log(error);
+      Swal.fire({
+        title: "User Login",
+        text: error?.response?.data?.message || "Login failed!",
+        icon: "error",
+      });
     }
   };
 
@@ -44,17 +46,17 @@ const Login = () => {
           <legend className="mb-2 font-medium">Username</legend>
           <input
             type="text"
-            name="name"
-            value={restaurant.name}
+            name="username"
+            value={login.username}
             onChange={handleChange}
             placeholder="Username"
             className="input input-secondary w-full mb-4"
           />
           <legend className="mb-2 font-medium">Password</legend>
           <input
-            type="text"
-            name="type"
-            value={restaurant.type}
+            type="password"
+            name="password"
+            value={login.password}
             onChange={handleChange}
             placeholder="Password"
             className="input input-primary w-full"
