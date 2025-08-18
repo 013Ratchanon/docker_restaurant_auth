@@ -1,18 +1,27 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import AuthService from "../services/auth.service";
 import { useNavigate } from "react-router";
+import { useAuthContext } from "../context/AuthContext";
 import Swal from "sweetalert2";
 const Login = () => {
   const [login, setLogin] = useState({
     username: "",
     password: "",
   });
+  const navigate = useNavigate();
+
+  const { login: loginFn, user } = useAuthContext();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user]);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLogin((login) => ({ ...login, [name]: value }));
   };
 
-  const navigate = useNavigate();
   const handleSubmit = async () => {
     try {
       const currentUser = await AuthService.login(
@@ -25,6 +34,7 @@ const Login = () => {
           text: "Login successfully!",
           icon: "success",
         }).then(() => {
+          loginFn(currentUser.data);
           navigate("/");
         });
       }

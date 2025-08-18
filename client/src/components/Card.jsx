@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-
+import { useAuthContext } from "../context/AuthContext";
 const Card = (props) => {
+  const { user } = useAuthContext();
   const Delete = async (id) => {
     try {
       const response = await fetch(
@@ -87,24 +88,36 @@ const Card = (props) => {
           <div className="badge badge-secondary">NEW</div>
         </h2>
         <p>{props.type}</p>
-        <div className="card-actions justify-end">
-          <div onClick={handleDelete} className="btn btn-outline btn-error">
-            Delete
+        {user && user.authorities.includes("ROLES_ADMIN") && (
+          <div className="card-actions justify-end">
+            <div onClick={handleDelete} className="btn btn-outline btn-error">
+              Delete
+            </div>
+            <a
+              href={"/update/" + props.id}
+              className="btn btn-outline btn-warning"
+            >
+              Edit
+            </a>
+            {showConfirm && (
+              <ConfirmDialog
+                message="ต้องการลบหรือไม่"
+                onConfirm={() => confirmDelete(props.id)}
+                onCancel={cancelDelete}
+              />
+            )}
           </div>
-          <a
-            href={"/update/" + props.id}
-            className="btn btn-outline btn-warning"
-          >
-            Edit
-          </a>
-          {showConfirm && (
-            <ConfirmDialog
-              message="ต้องการลบหรือไม่"
-              onConfirm={() => confirmDelete(props.id)}
-              onCancel={cancelDelete}
-            />
-          )}
-        </div>
+        )}
+        {user && user.authorities.includes("ROLES_MODERATOR") && (
+          <div className="card-actions justify-end">
+            <a
+              href={"/update/" + props.id}
+              className="btn btn-outline btn-warning"
+            >
+              Edit
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );

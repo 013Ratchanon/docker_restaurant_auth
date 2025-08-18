@@ -3,8 +3,11 @@ import { useAuthContext } from "../context/AuthContext";
 import Userprofile from "./Userprofile";
 const NavBar = () => {
   const { user } = useAuthContext();
+  const hasAdminAccess =
+    user?.roles?.includes("ROLES_ADMIN") ||
+    user?.roles?.includes("ROLES_MODERATOR");
   const menuItem = [
-    {
+     {
       name: "Add restaurant",
       url: "/add",
     },

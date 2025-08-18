@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import NavBar from "../components/NavBar";
-
+import { useAuthContext } from "../context/AuthContext";
 const AddRestaurant = () => {
+  const { user } = useAuthContext();
   const [restaurant, setRestaurants] = useState({
     name: "",
     type: "",
@@ -35,7 +36,7 @@ const AddRestaurant = () => {
       console.log(error);
     }
   };
-
+  
   return (
     <div className="container mx-auto">
       <div>
