@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router"; // ✅ เพิ่ม useNavigate
 import RestaurantService from "../services/restaurant.service";
 import Swal from "sweetalert2";
 
 const UpdateRestaurant = () => {
-  //1. Get Id from URL
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [restaurant, setRestaurant] = useState({
     name: "",
     type: "",
-    imageUrl: "",
+    imgUrl: "", // ✅ ใช้ imgUrl ตามที่คุณบอก
   });
 
-  //2. Get Restaurant by ID
   useEffect(() => {
     const getRestaurant = async () => {
       try {
         const response = await RestaurantService.getRestaurantById(id);
         if (response.status === 200) {
-          setRestaurant(response.data);
+          setRestaurant(response.data); // ✅ สมมุติว่า data ตรงกับ state
         }
       } catch (error) {
         Swal.fire({
@@ -30,10 +30,12 @@ const UpdateRestaurant = () => {
     };
     getRestaurant();
   }, [id]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setRestaurants({ ...restaurant, [name]: value });
+    setRestaurant({ ...restaurant, [name]: value }); // ✅ แก้จาก setRestaurants → setRestaurant
   };
+
   const handleSubmit = async () => {
     try {
       const response = await RestaurantService.editRestaurantById(
@@ -49,15 +51,10 @@ const UpdateRestaurant = () => {
           allowOutsideClick: false,
           showConfirmButton: false,
         });
-        setRestaurant({
-          name: "",
-          type: "",
-          imageUrl: "",
-        });
+
         setTimeout(() => {
           navigate("/");
         }, 2000);
-        console.log(response.data);
       }
     } catch (error) {
       Swal.fire({
@@ -67,9 +64,11 @@ const UpdateRestaurant = () => {
       });
     }
   };
+
   return (
     <div className="container mx-auto flex items-center flex-col">
       <h1 className="text-2xl mt-3">Update Your Restaurant</h1>
+
       <div className="mt-2">
         <legend className="mt-2">What is your restaurant name?</legend>
         <input
@@ -81,6 +80,7 @@ const UpdateRestaurant = () => {
           onChange={handleChange}
         />
       </div>
+
       <div className="mt-2">
         <legend className="text-center mt-2">
           What is your restaurant type?
@@ -94,29 +94,30 @@ const UpdateRestaurant = () => {
           onChange={handleChange}
         />
       </div>
+
       <div className="mt-2">
-        <legend className="text-center">
-          What is your restaurant imageUrl?
-        </legend>
+        <legend className="text-center">What is your restaurant imgUrl?</legend>
         <label className="input">
           <input
             type="text"
-            name="imageUrl"
+            name="imgUrl"
             value={restaurant.imgUrl}
             className="grow"
-            placeholder="your imageUrl link"
+            placeholder="your image URL link"
             onChange={handleChange}
           />
           <span className="badge badge-neutral badge-xs">*Must Type</span>
         </label>
       </div>
-      {restaurant.imageUrl && (
-        <div className="flex items-center gap-2">
-          <img className="h-32" src={restaurant.imageUrl}></img>
+
+      {restaurant.imgUrl && (
+        <div className="flex items-center gap-2 mt-2">
+          <img className="h-32" src={restaurant.imgUrl} alt="Preview" />
         </div>
       )}
+
       <div className="mt-3 space-x-2">
-        <button onClick={handleSubmit} className="btn btn-soft btn-success ">
+        <button onClick={handleSubmit} className="btn btn-soft btn-success">
           Update
         </button>
         <a href="/" className="btn btn-soft btn-error">
