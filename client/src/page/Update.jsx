@@ -1,28 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router";
-const Update = () => {
+import RestaurantService from "../services/restaurant.service";
+import Swal from "sweetalert2";
+
+const UpdateRestaurant = () => {
   //1. Get Id from URL
   const { id } = useParams();
-  const [restaurant, setRestaurants] = useState({
+  const [restaurant, setRestaurant] = useState({
     name: "",
     type: "",
-    imgUrl: "",
+    imageUrl: "",
   });
+
   //2. Get Restaurant by ID
   useEffect(() => {
-    fetch("http://localhost:5000/api/v1/restaurants/" + id)
-      .then((res) => {
-        // convert to json format
-        return res.json();
-      })
-      .then((response) => {
-        //save to state
-        setRestaurants(response);
-      })
-      .catch((err) => {
-        //catch error
-        console.log(err.message);
-      });
+    const getRestaurant = async () => {
+      try {
+        const response = await RestaurantService.getRestaurantById(id);
+        if (response.status === 200) {
+          setRestaurant(response.data);
+        }
+      } catch (error) {
+        Swal.fire({
+          title: "Get restaurant failed",
+          icon: "error",
+          text: error?.response?.data?.message || error.message,
+        });
+      }
+    };
+    getRestaurant();
   }, [id]);
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,83 +36,95 @@ const Update = () => {
   };
   const handleSubmit = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/v1/restaurants/" + id,
-        {
-          method: "PUT",
-          body: JSON.stringify(restaurant),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      const response = await RestaurantService.editRestaurantById(
+        id,
+        restaurant
       );
-      if (response.ok) {
-        alert("Restaurant Update successfully!!");
-        setRestaurants({
+      if (response.status === 200) {
+        Swal.fire({
+          title: "Success",
+          text: "Restaurant updated successfully",
+          icon: "success",
+          timer: 2000,
+          allowOutsideClick: false,
+          showConfirmButton: false,
+        });
+        setRestaurant({
           name: "",
           type: "",
-          imgUrl: "",
+          imageUrl: "",
         });
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+        console.log(response.data);
       }
     } catch (error) {
-      console.log(error);
+      Swal.fire({
+        title: "Update Failed",
+        text: error?.response?.data?.message || error.message,
+        icon: "error",
+      });
     }
   };
-
   return (
-    <div className="container mx-auto">
-      <div>
-        <h4 className="title justify-center text-3xl text-center m-5 p5 ">
-          Update Restaurant
-        </h4>
-      </div>
-
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">What is your name?</legend>
+    <div className="container mx-auto flex items-center flex-col">
+      <h1 className="text-2xl mt-3">Update Your Restaurant</h1>
+      <div className="mt-2">
+        <legend className="mt-2">What is your restaurant name?</legend>
         <input
           type="text"
           name="name"
           value={restaurant.name}
+          className="input"
+          placeholder="Type here"
           onChange={handleChange}
-          placeholder="name"
-          class="input input-secondary"
         />
-        <legend class="fieldset-legend">What is your type?</legend>
+      </div>
+      <div className="mt-2">
+        <legend className="text-center mt-2">
+          What is your restaurant type?
+        </legend>
         <input
           type="text"
           name="type"
           value={restaurant.type}
+          className="input"
+          placeholder="Type here"
           onChange={handleChange}
-          placeholder="Type"
-          class="input input-primary"
         />
-        <legend class="fieldset-legend">What is your img?</legend>
-        <input
-          type="text"
-          name="img"
-          value={restaurant.imgUrl}
-          onChange={handleChange}
-          placeholder="Img"
-          class="input input-info"
-        />
-        {restaurant.imgUrl && (
-          <div className="flex item-center gap-2">
-            <img className="h-32" src={restaurant.imgUrl} />
-          </div>
-        )}
-      </fieldset>
-      <button
-        onClick={handleSubmit}
-        class="btn btn-outline btn-success"
-        type="submit"
-      >
-        Update
-      </button>
-      <a href="/" class="btn btn-outline btn-error" type="cancel">
-        Cancel
-      </a>
+      </div>
+      <div className="mt-2">
+        <legend className="text-center">
+          What is your restaurant imageUrl?
+        </legend>
+        <label className="input">
+          <input
+            type="text"
+            name="imageUrl"
+            value={restaurant.imgUrl}
+            className="grow"
+            placeholder="your imageUrl link"
+            onChange={handleChange}
+          />
+          <span className="badge badge-neutral badge-xs">*Must Type</span>
+        </label>
+      </div>
+      {restaurant.imageUrl && (
+        <div className="flex items-center gap-2">
+          <img className="h-32" src={restaurant.imageUrl}></img>
+        </div>
+      )}
+      <div className="mt-3 space-x-2">
+        <button onClick={handleSubmit} className="btn btn-soft btn-success ">
+          Update
+        </button>
+        <a href="/" className="btn btn-soft btn-error">
+          Cancel
+        </a>
+      </div>
     </div>
   );
 };
 
-export default Update;
+export default UpdateRestaurant;

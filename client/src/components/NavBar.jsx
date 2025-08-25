@@ -7,7 +7,7 @@ const NavBar = () => {
     user?.roles?.includes("ROLES_ADMIN") ||
     user?.roles?.includes("ROLES_MODERATOR");
   const menuItem = [
-     {
+    {
       name: "Add restaurant",
       url: "/add",
     },
@@ -55,7 +55,7 @@ const NavBar = () => {
           </ul>
         </div>
         <a href="/" className="btn btn-ghost text-xl ">
-          Grab_Restaurant
+          Grab
         </a>
       </div>
       <div className="navbar-center hidden lg:flex">

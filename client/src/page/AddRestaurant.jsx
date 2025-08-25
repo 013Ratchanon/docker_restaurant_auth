@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import NavBar from "../components/NavBar";
-import { useAuthContext } from "../context/AuthContext";
+import RestaurantService from "../services/restaurant.service";
+import Swal from "sweetalert2";
 const AddRestaurant = () => {
-  const { user } = useAuthContext();
   const [restaurant, setRestaurants] = useState({
     name: "",
     type: "",
-    imgUrl: "",
+    imageUrl: "",
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,81 +13,83 @@ const AddRestaurant = () => {
   };
   const handleSubmit = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/v1/restaurants/",
-        {
-          method: "POST",
-          body: JSON.stringify(restaurant),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await RestaurantService.insertRestaurant(restaurant);
       if (response.status === 200) {
-        alert("Restaurant added successfully!!");
-        setRestaurants({
+        Swal.fire({
+          title: "Added restaurant successfully!",
+          icon: "success",
+          text: restaurant?.name,
+        }).then(() => {
+          navigate("/");
+        });
+        setRestaurant({
           name: "",
           type: "",
-          imgUrl: "",
+          imageUrl: "",
         });
+        console.log(response.data);
       }
     } catch (error) {
       console.log(error);
     }
   };
-  
   return (
-    <div className="container mx-auto">
-      <div>
-        <h4 className="title justify-center text-3xl text-center m-5 p5 ">
-          Add Restaurant
-        </h4>
-      </div>
+    <div className="container mx-auto flex items-center flex-col">
+      <h1 className="text-2xl mt-3">Add New Restaurant</h1>
 
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend">What is your name?</legend>
+      <div className="mt-2">
+        <legend className="mt-2">What is your restaurant name?</legend>
         <input
           type="text"
           name="name"
           value={restaurant.name}
+          className="input"
+          placeholder="Type here"
           onChange={handleChange}
-          placeholder="name"
-          class="input input-secondary"
         />
-        <legend class="fieldset-legend">What is your type?</legend>
+      </div>
+      <div className="mt-2">
+        <legend className="text-center mt-2">
+          What is your restaurant type?
+        </legend>
         <input
           type="text"
           name="type"
           value={restaurant.type}
+          className="input"
+          placeholder="Type here"
           onChange={handleChange}
-          placeholder="Type"
-          class="input input-primary"
         />
-        <legend class="fieldset-legend">What is your img?</legend>
-        <input
-          type="text"
-          name="imgUrl"
-          value={restaurant.imgUrl}
-          onChange={handleChange}
-          placeholder="Img"
-          class="input input-info"
-        />
-        {restaurant.imgUrl && (
-          <div className="flex item-center gap-2">
-            <img className="h-32" src={restaurant.imgUrl} />
-          </div>
-        )}
-      </fieldset>
-      <button
-        onClick={handleSubmit}
-        class="btn btn-outline btn-success"
-        type="submit"
-      >
-        Add
-      </button>
-      <button class="btn btn-outline btn-error" type="cancel">
-        Cancel
-      </button>
+      </div>
+      <div className="mt-2">
+        <legend className="text-center">What is your restaurant image?</legend>
+        <label className="input">
+          <input
+            type="text"
+            name="imageUrl"
+            value={restaurant.imageUrl}
+            className="grow"
+            placeholder="your image link"
+            onChange={handleChange}
+          />
+          <span className="badge badge-neutral badge-xs">*Must Type</span>
+        </label>
+      </div>
+      {restaurant.imageUrl && (
+        <div className="flex items-center gap-2">
+          <img className="h-32" src={restaurant.imageUrl}></img>
+        </div>
+      )}
+      <div className="mt-3 space-x-2">
+        <a
+          href="/"
+          onClick={handleSubmit}
+          className="btn btn-soft btn-success "
+        >
+          Add
+        </a>
+        <button className="btn btn-soft btn-error">Cancel</button>
+      </div>
     </div>
   );
 };
