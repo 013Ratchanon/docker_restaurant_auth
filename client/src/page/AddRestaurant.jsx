@@ -20,7 +20,7 @@ const AddRestaurant = () => {
           icon: "success",
           text: restaurant?.name,
         }).then(() => {
-          navigate("/");
+          // navigate("/");
         });
         setRestaurant({
           name: "",
