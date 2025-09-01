@@ -4,12 +4,13 @@ import dotenv from "dotenv";
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 import restaurantRouter from "./routers/restaurant.router.js";
+const FRONTEND_URL = process.env.FRONTED_URL;
 import cors from "cors";
 import authRouter from "./routers/auth.router.js";
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "127.0.0.1:5173"],
+    origin: ["http://localhost:5173", "127.0.0.1:5173", FRONTEND_URL],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "x-access-token"],
   })
