@@ -20,7 +20,7 @@ const AddRestaurant = () => {
           icon: "success",
           text: restaurant?.name,
         }).then(() => {
-          // navigate("/");
+           navigate("/");
         });
         setRestaurant({
           name: "",
@@ -82,7 +82,7 @@ const AddRestaurant = () => {
       )}
       <div className="mt-3 space-x-2">
         <a
-          // href="/"
+           href="/"
           onClick={handleSubmit}
           className="btn btn-soft btn-success "
         >
