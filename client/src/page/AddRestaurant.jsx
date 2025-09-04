@@ -5,7 +5,7 @@ const AddRestaurant = () => {
   const [restaurant, setRestaurants] = useState({
     name: "",
     type: "",
-    imageUrl: "",
+    imgUrl: "",
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,12 +20,12 @@ const AddRestaurant = () => {
           icon: "success",
           text: restaurant?.name,
         }).then(() => {
-           navigate("/");
+          // navigate("/");
         });
         setRestaurant({
           name: "",
           type: "",
-          imageUrl: "",
+          imgUrl: "",
         });
         console.log(response.data);
       }
@@ -66,8 +66,8 @@ const AddRestaurant = () => {
         <label className="input">
           <input
             type="text"
-            name="imageUrl"
-            value={restaurant.imageUrl}
+            name="imgUrl"
+            value={restaurant.imgUrl}
             className="grow"
             placeholder="your image link"
             onChange={handleChange}
@@ -75,14 +75,14 @@ const AddRestaurant = () => {
           <span className="badge badge-neutral badge-xs">*Must Type</span>
         </label>
       </div>
-      {restaurant.imageUrl && (
+      {restaurant.imgUrl && (
         <div className="flex items-center gap-2">
-          <img className="h-32" src={restaurant.imageUrl}></img>
+          <img className="h-32" src={restaurant.imgUrl}></img>
         </div>
       )}
       <div className="mt-3 space-x-2">
         <a
-           href="/"
+          // href="/"
           onClick={handleSubmit}
           className="btn btn-soft btn-success "
         >
